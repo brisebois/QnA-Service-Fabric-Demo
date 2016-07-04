@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using Microsoft.Owin.Cors;
 using Owin;
 
 namespace QnA.WebApi
@@ -19,8 +20,10 @@ namespace QnA.WebApi
             //);
 
             config.MapHttpAttributeRoutes();
+            
+            appBuilder.UseCors(CorsOptions.AllowAll)
+                      .UseWebApi(config);
 
-            appBuilder.UseWebApi(config);
 
             config.EnsureInitialized();
         }

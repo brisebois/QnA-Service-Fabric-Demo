@@ -1,12 +1,12 @@
 ﻿# Hit the root
 
-$base = 'http://localhost:8080'
+$base = 'http://liveqna.alexandrebrisebois.com'
 
 $result = Invoke-RestMethod -Method Get -Uri $($base + '/api')
 
 $root = $result
 
-# regiester
+# register
 
 $Body = @{
     name = "Alexandre Brisebois"
@@ -31,7 +31,7 @@ $created = $result
 
 # list sessions
 
-$result = Invoke-RestMethod -Method Get -Uri $($base + $created.links[0].uri)
+$result = Invoke-RestMethod -Method Get -Uri $($base + $registered.links[0].uri)
 
 $sessions = $result
 
@@ -41,7 +41,7 @@ $result = Invoke-RestMethod -Method Get -Uri $($base + $created.links[1].uri)
 
 $session = $result
 
-# regiester attendee
+# register attendee
 
 $Body = @{
     name = "Maxime Rouiller"

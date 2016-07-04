@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="QnA.SessionPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <ServiceTypes>
+    <StatefulServiceType ServiceTypeName="SessionActorServiceType" HasPersistedState="true">
+      <Extensions>
+        <Extension Name="__GeneratedServiceType__" GeneratedId="7da1e49a-ccce-4d14-af15-9619c1cc27b7|Persisted">
+          <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
+            <DefaultService Name="SessionActorService" />
+            <ServiceEndpoint Name="SessionActorServiceEndpoint" />
+            <ReplicatorEndpoint Name="SessionActorServiceReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="SessionActorServiceReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="SessionActorServiceReplicatorSecurityConfig" />
+            <StoreConfigSection Name="SessionActorServiceLocalStoreConfig" />
+          </GeneratedNames>
+        </Extension>
+      </Extensions>
+    </StatefulServiceType>
+    <StatefulServiceType ServiceTypeName="SessionListActorServiceType" HasPersistedState="true">
+      <Extensions>
+        <Extension Name="__GeneratedServiceType__" GeneratedId="08c4e634-c7f3-46e7-b025-f46c41d195b7|Persisted">
+          <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
+            <DefaultService Name="SessionListActorService" />
+            <ServiceEndpoint Name="SessionListActorServiceEndpoint" />
+            <ReplicatorEndpoint Name="SessionListActorServiceReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="SessionListActorServiceReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="SessionListActorServiceReplicatorSecurityConfig" />
+            <StoreConfigSection Name="SessionListActorServiceLocalStoreConfig" />
+          </GeneratedNames>
+        </Extension>
+      </Extensions>
+    </StatefulServiceType>
+    <StatefulServiceType ServiceTypeName="TranscriptActorServiceType" HasPersistedState="true">
+      <Extensions>
+        <Extension Name="__GeneratedServiceType__" GeneratedId="912ea634-6bb4-4310-87a3-d8c899af557f|Persisted">
+          <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
+            <DefaultService Name="TranscriptActorService" />
+            <ServiceEndpoint Name="TranscriptActorServiceEndpoint" />
+            <ReplicatorEndpoint Name="TranscriptActorServiceReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="TranscriptActorServiceReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="TranscriptActorServiceReplicatorSecurityConfig" />
+            <StoreConfigSection Name="TranscriptActorServiceLocalStoreConfig" />
+          </GeneratedNames>
+        </Extension>
+      </Extensions>
+    </StatefulServiceType>
+  </ServiceTypes>
+  <CodePackage Name="Code" Version="1.0.0">
+    <EntryPoint>
+      <ExeHost>
+        <Program>QnA.Session.exe</Program>
+      </ExeHost>
+    </EntryPoint>
+  </CodePackage>
+  <ConfigPackage Name="Config" Version="1.0.0" />
+  <Resources>
+    <Endpoints>
+      <Endpoint Name="SessionActorServiceEndpoint" />
+      <Endpoint Name="SessionActorServiceReplicatorEndpoint" />
+      <Endpoint Name="SessionListActorServiceEndpoint" />
+      <Endpoint Name="SessionListActorServiceReplicatorEndpoint" />
+      <Endpoint Name="TranscriptActorServiceEndpoint" />
+      <Endpoint Name="TranscriptActorServiceReplicatorEndpoint" />
+    </Endpoints>
+  </Resources>
+  <!-- The content will be generated during build -->
+</ServiceManifest>

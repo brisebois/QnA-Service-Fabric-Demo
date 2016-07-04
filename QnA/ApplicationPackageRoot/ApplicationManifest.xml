@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="QnAType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="WebApi_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="ParticipantActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="ParticipantActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="ParticipantActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="QuestionActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="QuestionActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="QuestionActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SessionActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="SessionActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SessionActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SessionListActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="SessionListActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="SessionListActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TranscriptActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="TranscriptActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TranscriptActorService_TargetReplicaSetSize" DefaultValue="3" />
+  </Parameters>
+  <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
+       should match the Name and Version attributes of the ServiceManifest element defined in the 
+       ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="QnA.WebApiPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="QnA.QuestionPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="QnA.ParticipantPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="QnA.SessionPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
+  <DefaultServices>
+    <!-- The section below creates instances of service types, when an instance of this 
+         application type is created. You can also create one or more instances of service type using the 
+         ServiceFabric PowerShell module.
+         
+         The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
+    <Service Name="WebApi">
+      <StatelessService ServiceTypeName="WebApiType" InstanceCount="[WebApi_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="ParticipantActorService" GeneratedIdRef="9eaab490-e4f2-47d8-b3e4-18fece3d00ff|Persisted">
+      <StatefulService ServiceTypeName="ParticipantActorServiceType" TargetReplicaSetSize="[ParticipantActorService_TargetReplicaSetSize]" MinReplicaSetSize="[ParticipantActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[ParticipantActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="QuestionActorService" GeneratedIdRef="354b7b62-d015-41e2-9699-ff12b1ff5afb|Persisted">
+      <StatefulService ServiceTypeName="QuestionActorServiceType" TargetReplicaSetSize="[QuestionActorService_TargetReplicaSetSize]" MinReplicaSetSize="[QuestionActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[QuestionActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="SessionActorService" GeneratedIdRef="7da1e49a-ccce-4d14-af15-9619c1cc27b7|Persisted">
+      <StatefulService ServiceTypeName="SessionActorServiceType" TargetReplicaSetSize="[SessionActorService_TargetReplicaSetSize]" MinReplicaSetSize="[SessionActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[SessionActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="SessionListActorService" GeneratedIdRef="08c4e634-c7f3-46e7-b025-f46c41d195b7|Persisted">
+      <StatefulService ServiceTypeName="SessionListActorServiceType" TargetReplicaSetSize="[SessionListActorService_TargetReplicaSetSize]" MinReplicaSetSize="[SessionListActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[SessionListActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="TranscriptActorService" GeneratedIdRef="912ea634-6bb4-4310-87a3-d8c899af557f|Persisted">
+      <StatefulService ServiceTypeName="TranscriptActorServiceType" TargetReplicaSetSize="[TranscriptActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TranscriptActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[TranscriptActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+  </DefaultServices>
+</ApplicationManifest>

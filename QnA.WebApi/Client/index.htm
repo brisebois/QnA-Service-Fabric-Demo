@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>QnA - Web</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">QnA</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+
+    <div class="container" id="login">
+        <div class="row">
+            <div class="col-md-3 col-offset-3">
+
+
+                <form id="registerForm" action="" method="POST" name="registerForm" novalidate>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="Maxime Rouiller">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="maxime@novawebsolutions.ca">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit" id="register">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="container" id="ViewSessions" style="display: none">
+        <div class="row" id="sessionList">
+        </div>
+    </div>
+
+    <div class="container" id="CurrentSession" style="display: none">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 id="title"></h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" id="transcript"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="ask-questions">
+                <div class="form-group">
+                    <input class="form-control" id="question" name="question" />
+                    <button class="btn btn-primary btn-lg btn-block askQuestion" type="button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+            ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <style>
+        div#transcript {
+            min-height: 300px;
+            border: solid 1px black;
+            overflow-y: scroll;
+        }
+    </style>
+<script>
+    $.ajaxSetup({ // Disable caching of AJAX responses 
+        cache: false
+    });
+    var baseUri = 'http://localhost:8080'; //'http://liveqna.alexandrebrisebois.com';
+    $("#sessionList").bind('click', '.joinSession', function (event) {
+        event.preventDefault();
+        var uri = $(".joinSession", this).data('uri');
+        if (uri) {
+            joinSession(uri);
+        }
+    });
+
+    $("#ask-questions").bind('click', 'button.askQuestion', function (event) {
+        event.preventDefault();
+
+        var uri = $("button.askQuestion", this).data('uri');
+
+        if (uri) {
+            askQuestion(uri);
+        }
+    });
+
+    $("#registerForm").on('submit', function (event) {
+        event.preventDefault();
+        var data = {};
+        $(this).serializeArray().map(function (x) { data[x.name] = x.value; });
+
+        $.post(baseUri + '/api', data).then(function (result) {
+            $("#login").hide();
+            var link = getLinkForName(result, 'list-sessions');
+            getSessions(link);
+        });
+    });
+
+    function askQuestion(url) {
+        if ($("#question").val()) {
+            $.post(url, { content: $("#question").val() }).then(function (result) {
+                debugger;
+            });
+        }
+
+        $("#question").val('');
+    }
+    function joinSession(uri) {
+        $("#login").hide();
+        $("#ViewSessions").hide();
+        $("#CurrentSession").show();
+
+        $.post(uri).then(function (result) {
+            var transcript = getLinkForName(result, 'session-transcript');
+
+            getTranscript(transcript);
+            setInterval(function () {
+                getTranscript(transcript);
+            }, 2000);
+
+        });
+    }
+
+    function getTranscript(transcript) {
+        $.get(transcript).then(function (result) {
+            console.debug(result);
+            $("#title").html(result.name + " (" + result.attendeeCount + " attendees)" + "<br/> by " + result.presenter);
+            var linkForName = getLinkForName(result, 'ask-question');
+            $("#transcript").html(result.events.join('<br/>'));
+            $("button.askQuestion", "#ask-questions").data('uri', linkForName);
+        });
+    }
+    function getSessions(link) {
+        $.getJSON(link).then(function (result) {
+            $("#ViewSessions").show();
+            $("#sessionList").empty();
+
+            result.sessions.forEach(function (session) {
+                var link = getLinkForName(session, 'join-session');
+                $("#sessionList").append('<div class="col-md-12" ><h1>' + session.name + '</h1><button class="btn btn-primary joinSession" type="button" data-uri="' + link + '">Join</button></div>');
+            });
+
+        });
+    }
+    function getLinkForName(obj, name) {
+        var links = obj.links || [];
+        for (var i = 0; i < links.length; i++) {
+            if (links[i].rel === name) {
+                return baseUri + links[i].uri;
+            }
+        }
+        return undefined;
+    }
+</script>
+</body>
+</html>

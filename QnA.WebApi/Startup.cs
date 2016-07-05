@@ -1,5 +1,8 @@
-﻿using System.Web.Http;
+﻿using System.Collections.Generic;
+using System.Web.Http;
 using Microsoft.Owin.Cors;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
 using Owin;
 
 namespace QnA.WebApi
@@ -11,19 +14,30 @@ namespace QnA.WebApi
         public static void ConfigureApp(IAppBuilder appBuilder)
         {
             // Configure Web API for self-host. 
-            HttpConfiguration config = new HttpConfiguration();
-           
-            //config.Routes.MapHttpRoute(
-            //    name: "API Default",
-            //    routeTemplate: "api/{controller}/{id}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
+            var config = new HttpConfiguration();
 
             config.MapHttpAttributeRoutes();
             
-            appBuilder.UseCors(CorsOptions.AllowAll)
-                      .UseWebApi(config);
+            var fileServerOptions = new FileServerOptions
+            {
+                DefaultFilesOptions =
+                {
+                    DefaultFileNames = new List<string> {"index.htm"}
+                },
+                FileSystem = new PhysicalFileSystem("Client"),
+                EnableDefaultFiles = true,
+                EnableDirectoryBrowsing = false
+            };
 
+            appBuilder.UseCors(CorsOptions.AllowAll)
+                      .UseWebApi(config)
+                      .UseFileServer(fileServerOptions)
+                      .UseStaticFiles(new StaticFileOptions
+                      {
+                          ServeUnknownFileTypes = true
+                      });
+            
+            
 
             config.EnsureInitialized();
         }

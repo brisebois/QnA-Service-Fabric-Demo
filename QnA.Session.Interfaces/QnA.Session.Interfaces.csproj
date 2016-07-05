@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="ISessionListActor.cs" />
     <Compile Include="ITranscriptActor.cs" />
+    <Compile Include="ITranscriptViewActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISessionActor.cs" />
     <Compile Include="Models\SessionDetails.cs" />

@@ -22,7 +22,7 @@
   -->
   <ClusterConnectionParameters ConnectionEndpoint="qnademo.northcentralus.cloudapp.azure.com:19000" />
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
-  <UpgradeDeployment Mode="Monitored" Enabled="true">
-    <Parameters FailureAction="Rollback" Force="True" />
+  <UpgradeDeployment Mode="UnmonitoredAuto" Enabled="true">
+    <Parameters Force="True" />
   </UpgradeDeployment>
 </PublishProfile>

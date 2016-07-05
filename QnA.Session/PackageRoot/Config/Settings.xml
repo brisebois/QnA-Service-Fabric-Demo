@@ -21,5 +21,12 @@
   <Section Name="TranscriptActorServiceReplicatorSecurityConfig">
     <Parameter Name="CredentialType" Value="None" />
   </Section>
+  <Section Name="TranscriptViewActorServiceReplicatorConfig">
+    <Parameter Name="ReplicatorEndpoint" Value="TranscriptViewActorServiceReplicatorEndpoint" />
+    <Parameter Name="BatchAcknowledgementInterval" Value="0.005" />
+  </Section>
+  <Section Name="TranscriptViewActorServiceReplicatorSecurityConfig">
+    <Parameter Name="CredentialType" Value="None" />
+  </Section>
   <!-- The content will be generated during build -->
 </Settings>

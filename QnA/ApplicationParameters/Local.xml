@@ -7,5 +7,6 @@
     <Parameter Name="SessionActorService_PartitionCount" Value="1" />
     <Parameter Name="SessionListActorService_PartitionCount" Value="1" />
     <Parameter Name="TranscriptActorService_PartitionCount" Value="1" />
+    <Parameter Name="TranscriptViewActorService_PartitionCount" Value="1" />
   </Parameters>
 </Application>

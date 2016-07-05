@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="QnAType" ApplicationTypeVersion="1.0.3" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="QnAType" ApplicationTypeVersion="1.0.9" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="WebApi_InstanceCount" DefaultValue="-1" />
     <Parameter Name="ParticipantActorService_PartitionCount" DefaultValue="10" />
@@ -17,22 +17,25 @@
     <Parameter Name="TranscriptActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="TranscriptActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="TranscriptActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TranscriptViewActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="TranscriptViewActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="TranscriptViewActorService_TargetReplicaSetSize" DefaultValue="1" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="QnA.WebApiPkg" ServiceManifestVersion="1.0.3" />
+    <ServiceManifestRef ServiceManifestName="QnA.WebApiPkg" ServiceManifestVersion="1.0.9" />
     <ConfigOverrides />
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="QnA.QuestionPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="QnA.QuestionPkg" ServiceManifestVersion="1.0.9" />
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="QnA.ParticipantPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="QnA.ParticipantPkg" ServiceManifestVersion="1.0.9" />
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="QnA.SessionPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="QnA.SessionPkg" ServiceManifestVersion="1.0.9" />
   </ServiceManifestImport>
   <DefaultServices>
     <!-- The section below creates instances of service types, when an instance of this 
@@ -65,9 +68,14 @@
         <UniformInt64Partition PartitionCount="[SessionListActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-    <Service Name="TranscriptActorService" GeneratedIdRef="912ea634-6bb4-4310-87a3-d8c899af557f|Persisted">
+    <Service Name="TranscriptActorService" GeneratedIdRef="39c84c44-7f73-45ed-93f7-332d67e403c0|Volatile">
       <StatefulService ServiceTypeName="TranscriptActorServiceType" TargetReplicaSetSize="[TranscriptActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TranscriptActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[TranscriptActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="TranscriptViewActorService" GeneratedIdRef="c8662634-b888-4bb7-b098-0659000e991b|None">
+      <StatefulService ServiceTypeName="TranscriptViewActorServiceType" TargetReplicaSetSize="[TranscriptViewActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TranscriptViewActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[TranscriptViewActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

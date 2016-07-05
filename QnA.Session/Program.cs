@@ -24,6 +24,7 @@ namespace QnA.Session
                 ActorRuntime.RegisterActorAsync<SessionActor>((context, actorType) => new ActorService(context, actorType, () => new SessionActor())).GetAwaiter().GetResult();
                 ActorRuntime.RegisterActorAsync<SessionListActor>((context, actorType) => new ActorService(context, actorType, () => new SessionListActor())).GetAwaiter().GetResult();
                 ActorRuntime.RegisterActorAsync<TranscriptActor>((context, actorType) => new ActorService(context, actorType, () => new TranscriptActor())).GetAwaiter().GetResult();
+                ActorRuntime.RegisterActorAsync<TranscriptViewActor>((context, actorType) => new ActorService(context, actorType, () => new TranscriptViewActor())).GetAwaiter().GetResult();
 
                 Thread.Sleep(Timeout.Infinite);
             }

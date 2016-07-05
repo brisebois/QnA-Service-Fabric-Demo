@@ -1,6 +1,9 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Fabric.Health;
+using System.IO.MemoryMappedFiles;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
@@ -10,7 +13,7 @@ using QnA.Session.Interfaces.Models;
 
 namespace QnA.Session
 {
-    [StatePersistence(StatePersistence.Persisted)]
+    [StatePersistence(StatePersistence.Volatile)]
     internal class TranscriptActor : Actor, ITranscriptActor, IRemindable
     {
         /// <summary>
@@ -28,16 +31,41 @@ namespace QnA.Session
 
             await RegisterReminderAsync("materialize",
                                         new byte[0],
-                                        TimeSpan.FromSeconds(10),
-                                        TimeSpan.FromSeconds(5));
+                                        TimeSpan.FromSeconds(0),
+                                        TimeSpan.FromSeconds(2));
 
             await StateManager.TryAddStateAsync("lines", new List<string>());
+            await StateManager.TryAddStateAsync("views", new List<ITranscriptViewActor>());
         }
 
         public async Task<List<string>> GetEntriesAsync()
         {
             var list = await StateManager.GetStateAsync<List<string>>("lines");
             return list;
+        }
+
+        public async Task RegisterViewAsync(ITranscriptViewActor transcriptViewActor)
+        {
+            var views = await StateManager.GetStateAsync<List<ITranscriptViewActor>>("views");
+            if (views.Contains(transcriptViewActor))
+                return;
+
+            views.Add(transcriptViewActor);
+
+            await StateManager.SetStateAsync("views", views);
+
+            var list = await StateManager.GetStateAsync<List<string>>("lines");
+            await transcriptViewActor.UpdateLocalCopyAsync(list);
+        }
+
+        public async Task UnregisterViewAsync(ITranscriptViewActor transcriptViewActor)
+        {
+            var views = await StateManager.GetStateAsync<List<ITranscriptViewActor>>("views");
+            if (!views.Contains(transcriptViewActor))
+                return;
+
+            views.Remove(transcriptViewActor);
+
         }
 
         public async Task ReceiveReminderAsync(string reminderName,
@@ -66,14 +94,21 @@ namespace QnA.Session
 
                 lines.Add($"{questionDetails.AskDateTime.ToString("t")}: {participantDetails.Name} asked '{questionDetails.Content}'");
 
-                if (!string.IsNullOrWhiteSpace(questionDetails.Answer)) continue;
+                if (string.IsNullOrWhiteSpace(questionDetails.Answer)) continue;
 
                 var answeringParticipantDetails = await questionDetails.AnsweredByParticipant.GetDetailsAsync();
 
                 lines.Add($"{questionDetails.AnswerDateTime.ToString("t")}: {answeringParticipantDetails.Name} answered '{questionDetails.Content}'");
             }
 
-            await StateManager.TryAddStateAsync("lines", lines);
+            await StateManager.SetStateAsync("lines", lines);
+
+            var views = await StateManager.GetStateAsync<List<ITranscriptViewActor>>("views");
+
+            views.AsParallel().ForAll(v =>
+            {
+                v.UpdateLocalCopyAsync(lines);
+            });
         }
 
         private static bool IsSessionEnded(SessionDetails sessionDetails)

@@ -85,6 +85,7 @@
     <Compile Include="State\SessionListState.cs" />
     <Compile Include="State\SessionState.cs" />
     <Compile Include="TranscriptActor.cs" />
+    <Compile Include="TranscriptViewActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PackageRoot\ServiceManifest.xml" />

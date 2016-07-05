@@ -17,13 +17,13 @@ using QnA.Session.Interfaces.Models;
 
 namespace QnA.WebApi.Controllers
 {
-    [RoutePrefix("api")]
+    [System.Web.Http.RoutePrefix("api")]
     public class QnAController : ApiController
     {
         private const string SessionListActorId = "session-list";
         // Get api/
-        [HttpGet]
-        [Route("", Name = "Default")]
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("", Name = "Default")]
         public HttpResponseMessage Default()
         {
             var r = Representation.Make();
@@ -36,8 +36,8 @@ namespace QnA.WebApi.Controllers
         }
 
         // POST api/
-        [HttpPost]
-        [Route("", Name = "Register")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("", Name = "Register")]
         public async Task<HttpResponseMessage> RegisterAsync([FromBody] Models.Participant participant)
         {
             var id = GuidUtility.Create(GuidUtility.UrlNamespace, participant.Email);
@@ -60,8 +60,8 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.Created, r.Json());
         }
 
-        [HttpPost]
-        [Route("{participantId:guid}/sessions", Name = "AddSession")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions", Name = "AddSession")]
         public async Task<HttpResponseMessage> AddSessionAsync([FromUri] Guid participantId,
                                                                [FromBody] Models.Session session)
         {
@@ -89,8 +89,8 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.Created, r.Json());
         }
 
-        [HttpGet]
-        [Route("{participantId:guid}/sessions", Name = "ListSessions")]
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("{participantId:guid}/sessions", Name = "ListSessions")]
         public async Task<HttpResponseMessage> ListSessionsAsync([FromUri] Guid participantId,
                                                                  [FromBody] Models.Session session)
         {
@@ -120,8 +120,8 @@ namespace QnA.WebApi.Controllers
             return httpResponseMessage;
         }
 
-        [HttpPost]
-        [Route("{participantId:guid}/sessions/{sessionId:long}/join", Name = "JoinSession")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/join", Name = "JoinSession")]
         public async Task<HttpResponseMessage> JoinSessionAsync([FromUri] Guid participantId,
                                                                 [FromUri] long sessionId)
         {
@@ -148,6 +148,30 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, r.Json());
         }
 
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/start", Name = "StartSession")]
+        public async Task<HttpResponseMessage> StartSessionAsync([FromUri] Guid participantId,
+                                                                [FromUri] long sessionId)
+        {
+            var sessionActor = ActorProxy.Create<ISessionActor>(new ActorId(sessionId));
+            
+            await sessionActor.StartAsync();
+
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/end", Name = "EndSession")]
+        public async Task<HttpResponseMessage> EndSessionAsync([FromUri] Guid participantId,
+                                                               [FromUri] long sessionId)
+        {
+            var sessionActor = ActorProxy.Create<ISessionActor>(new ActorId(sessionId));
+
+            await sessionActor.EndAsync();
+
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
         private static bool IsNotPresenter(Guid participantId, SessionDetails details)
         {
             return details.Presenter.GetActorId().GetGuidId() != participantId;
@@ -158,8 +182,8 @@ namespace QnA.WebApi.Controllers
             return details.Presenter.GetActorId().GetGuidId() == participantId;
         }
 
-        [HttpGet]
-        [Route("{participantId:guid}/sessions/{sessionId:long}", Name = "Session")]
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}", Name = "Session")]
         public async Task<HttpResponseMessage> GetSessionAsync([FromUri] Guid participantId,
                                                                [FromUri] long sessionId)
         {
@@ -205,8 +229,8 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, r.Json());
         }
 
-        [HttpGet]
-        [Route("{participantId:guid}/sessions/{sessionId:long}/transcript", Name = "Transcript")]
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/transcript", Name = "Transcript")]
         public async Task<HttpResponseMessage> GetTranscriptAsync([FromUri] Guid participantId,
                                                                   [FromUri] long sessionId)
         {
@@ -224,11 +248,11 @@ namespace QnA.WebApi.Controllers
 
             r.AddValue("presenter", presenterDetails.Name);
 
-            var transcriptActor = ActorProxy.Create<ITranscriptActor>(new ActorId(sessionId));
+            var transcriptActor = ActorProxy.Create<ITranscriptViewActor>(new ActorId(participantId));
 
-            var entries = await transcriptActor.GetEntriesAsync();
+            var entries = await transcriptActor.GetEntriesAsync(sessionId);
 
-            r.AddArray("events", entries.Select(e => new JObject(e)).ToArray());
+            r.AddArray("events", entries.Select(e => e).ToArray());
 
             r.AddLink("session-transcript", Url.Route("Transcript", new { participantId = participantId, sessionId = sessionId }));
             r.AddLink("ask-question", Url.Route("PostQuestion", new { participantId = participantId, sessionId = sessionId }));
@@ -238,15 +262,15 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, r.Json());
         }
 
-        [HttpPost]
-        [Route("{participantId:guid}/sessions/{sessionId:long}/questions", Name = "PostQuestion")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/questions", Name = "PostQuestion")]
         public async Task<HttpResponseMessage> PostQuestionAsync([FromUri] Guid participantId,
                                                                  [FromUri] long sessionId,
                                                                  [FromBody] Models.Question question)
         {
             var sessionActor = ActorProxy.Create<ISessionActor>(new ActorId(sessionId));
 
-            var participantActor = ActorProxy.Create<IParticipantActor>(new ActorId(sessionId));
+            var participantActor = ActorProxy.Create<IParticipantActor>(new ActorId(participantId));
 
             var questionActor = ActorProxy.Create<IQuestionActor>(ActorId.CreateRandom());
 
@@ -257,14 +281,14 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.Created);
         }
 
-        [HttpPost]
-        [Route("{participantId:guid}/sessions/{sessionId:long}/questions/{questionId:long}", Name = "PostAnswer")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/questions/{questionId:long}", Name = "PostAnswer")]
         public async Task<HttpResponseMessage> PostAnswerAsync([FromUri] Guid participantId,
                                                                [FromUri] long sessionId,
                                                                [FromUri] long questionId,
                                                                [FromBody] Models.Answer answer)
         {
-            var participantActor = ActorProxy.Create<IParticipantActor>(new ActorId(sessionId));
+            var participantActor = ActorProxy.Create<IParticipantActor>(new ActorId(participantId));
 
             var questionActor = ActorProxy.Create<IQuestionActor>(new ActorId(questionId));
 
@@ -273,8 +297,8 @@ namespace QnA.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.Created);
         }
 
-        [HttpPost]
-        [Route("{participantId:guid}/sessions/{sessionId:long}/questions/{questionId:long}", Name = "GetQuestion")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("{participantId:guid}/sessions/{sessionId:long}/questions/{questionId:long}", Name = "GetQuestion")]
         public async Task<HttpResponseMessage> GetQuestionAsync([FromUri] Guid participantId,
                                                                 [FromUri] long sessionId,
                                                                 [FromUri] long questionId)

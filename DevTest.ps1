@@ -1,6 +1,6 @@
 ﻿# Hit the root
 
-$base = 'http://liveqna.alexandrebrisebois.com'
+$base = 'http://liveqna.alexandrebrisebois.com' # 'http://localhost:8080' #
 
 $result = Invoke-RestMethod -Method Get -Uri $($base + '/api')
 
@@ -72,3 +72,5 @@ $aresult = Invoke-RestMethod -Method Get -Uri $($base + $joinedSession.links[0].
 
 $asession = $aresult
 $asession
+
+$s = Invoke-RestMethod -Method Post -Uri $($base + '/api/4380ef93-f823-51a8-8a3e-a74351a293ad/sessions/-9077483017110054082/start')

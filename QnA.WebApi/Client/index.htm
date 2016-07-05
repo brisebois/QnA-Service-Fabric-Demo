@@ -44,16 +44,14 @@
     <div class="container" id="login">
         <div class="row">
             <div class="col-md-3 col-offset-3">
-
-
                 <form id="registerForm" action="" method="POST" name="registerForm" novalidate>
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="Maxime Rouiller">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
                     </div>
                     <div class="form-group">
                         <label for="email">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="maxime@novawebsolutions.ca">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary" type="submit" id="register">Register</button>
@@ -95,7 +93,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <style>
         div#transcript {
-            min-height: 300px;
+            min-height: 200px;
             border: solid 1px black;
             overflow-y: scroll;
         }
@@ -104,7 +102,7 @@
     $.ajaxSetup({ // Disable caching of AJAX responses 
         cache: false
     });
-    var baseUri = 'http://localhost:8080'; //'http://liveqna.alexandrebrisebois.com';
+    var baseUri = 'http://liveqna.alexandrebrisebois.com'; // 'http://localhost:8080';
     $("#sessionList").bind('click', '.joinSession', function (event) {
         event.preventDefault();
         var uri = $(".joinSession", this).data('uri');

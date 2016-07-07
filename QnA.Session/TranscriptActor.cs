@@ -113,7 +113,7 @@ namespace QnA.Session
 
         private static bool IsSessionEnded(SessionDetails sessionDetails)
         {
-            return sessionDetails.EndDateTime < DateTime.UtcNow;
+            return sessionDetails.EndDateTime.AddDays(7) < DateTime.UtcNow;
         }
     }
 }
